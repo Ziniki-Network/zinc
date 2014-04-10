@@ -1,0 +1,64 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    
+    <!-- Always force latest IE rendering engine or request Chrome Frame -->
+    <meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible">
+    
+    <!-- Use title if it's in the page YAML frontmatter -->
+    <title>ZiNC Streaming Communications Protocol</title>
+    
+    <link href='http://fonts.googleapis.com/css?family=Titillium+Web:400,600,700,900' rel='stylesheet' type='text/css'>
+    <link href="/stylesheets/normalize.css" media="screen" rel="stylesheet" type="text/css" />
+    <link href="/stylesheets/all.css" media="screen" rel="stylesheet" type="text/css" />
+  </head>
+
+  <body>
+      <header>
+    <nav>
+      <ul>
+        <li><a href="/">Overview</a></li>
+        <li><a href="/format/index.html">Format</a></li>
+        <li><a href="/apis">APIs</a></li>
+        <li><a href="/examples">Examples</a></li>
+      </ul>
+    </nav>
+
+    <h1>ZiNC Streaming Communications Protocol</h1>
+
+  </header>
+
+    <h2 id="description">Description</h2>
+
+<p>The use of HTTP, URL and REST communications is well understood for request/response interactions. The use of continuously connected, streaming interactions over the web is less well understood.</p>
+
+<p>The ZiNC protocol is designed to eliminate much of the confusion and uncertainty surrounding streaming interactions.</p>
+
+<p>The ZiNC protocol is a simple, well-defined protocol that builds on top of other standard protocols, but leaves the definition of operational semantics up to the applications.</p>
+
+<p>Building on top of WebSockets, the ZiNC protocol is compatible with most modern web servers and browsers.</p>
+
+<p>ZiNC uses JSON as its transport because it is easily and natively understood by all browsers; but this does not require servers or applications to use JavaScript. It is simply an encoding format.</p>
+
+<p>ZiNC uses JSON to encode requests, but stays in the spirit of HTTP requests and URIs.</p>
+
+<p>ZiNC builds on top of <a href="http://jsonapi.org/">JSONAPI</a> to define its object payloads.</p>
+
+<h2 id="implementations">Implementations</h2>
+
+<p>Simple APIs to use to communicate using the ZiNC protocol are available for:</p>
+
+<ul>
+<li>JavaScript</li>
+
+<li>Java</li>
+</ul>
+      <footer>
+    <p>Built with <a href="http://jekyllrb.com/">Jekyll</a> and
+    hosted by <a href="http://pages.github.com/">GitHub Pages</a>.
+    Generated at 2014-04-10T10:19:24-04:00.</p>
+  </footer>
+
+  </body>
+</html>

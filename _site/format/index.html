@@ -1,0 +1,78 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    
+    <!-- Always force latest IE rendering engine or request Chrome Frame -->
+    <meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible">
+    
+    <!-- Use title if it's in the page YAML frontmatter -->
+    <title>ZiNC Format</title>
+    
+    <link href='http://fonts.googleapis.com/css?family=Titillium+Web:400,600,700,900' rel='stylesheet' type='text/css'>
+    <link href="/stylesheets/normalize.css" media="screen" rel="stylesheet" type="text/css" />
+    <link href="/stylesheets/all.css" media="screen" rel="stylesheet" type="text/css" />
+  </head>
+
+  <body>
+      <header>
+    <nav>
+      <ul>
+        <li><a href="/">Overview</a></li>
+        <li><a href="/format/index.html">Format</a></li>
+        <li><a href="/apis">APIs</a></li>
+        <li><a href="/examples">Examples</a></li>
+      </ul>
+    </nav>
+
+    <h1>ZiNC Format</h1>
+
+  </header>
+
+    <p>The basic format of ZiNC messages is a three-part JSON structure:</p>
+
+<pre class="json"><code class="json">
+{
+  &quot;subscription&quot;: id,
+  &quot;request&quot;: { ... },
+  &quot;payload&quot;: { ... }
+}
+</code></pre>
+
+<p>However, individual messages will generally not have all three parts, but only those parts that are necessary to their function.</p>
+
+<p>Unlike HTTP, streaming communications are fundamentally bi-directional; messages can flow in both directions and can be initiated by either end. Note however that ZiNC only specifies the <em>format</em> of the communication; the semantics are determined by the operations understood at each end of the communication channel. It is important that the two ends understand what the other is capable of before beginning communication.</p>
+
+<h2 id="requests">Requests</h2>
+
+<p>Either end of the communication channel can initiate a <em>request</em> on the other end.</p>
+
+<p>The simplest type of request just asks the other end to perform an operation and does not send any additional data or want a response. For example, a heartbeat operation might look like this:</p>
+
+<pre class="json"><code class="json">
+{
+  &quot;request&quot;: {
+    &quot;method&quot;: &quot;heartbeat&quot;
+  }
+}
+</code></pre>
+
+<p>A simple request for a resource requires both a request object and a subcription handle. The handle will be sent back with a response object.</p>
+
+<pre class="json"><code class="json">
+{
+  &quot;subscription&quot;: 14,
+  &quot;request&quot;: {
+    &quot;method&quot;: &quot;get&quot;,
+    &quot;resource&quot;: &quot;/path/to/resource&quot;
+  }
+}
+</code></pre>
+      <footer>
+    <p>Built with <a href="http://jekyllrb.com/">Jekyll</a> and
+    hosted by <a href="http://pages.github.com/">GitHub Pages</a>.
+    Generated at 2014-04-10T10:19:24-04:00.</p>
+  </footer>
+
+  </body>
+</html>
