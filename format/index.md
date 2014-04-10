@@ -34,7 +34,8 @@ For example, a heartbeat operation might look like this:
 ```json
 {
   "request": {
-    "method": "heartbeat"
+    "method": "invoke",
+    "operation": "heartbeat"
   }
 }
 ```
@@ -52,3 +53,18 @@ subcription handle.  The handle will be sent back with a response object.
 }
 ```
 
+Unlike HTTP, which is strictly one-request, one-response, streaming
+protocols can have any number of responses to a request.  The previous
+two examples have had 0 and 1 responses respectively, but it is also
+possible to "subscribe" to a resource, that is, to request it and all
+future versions of it.
+
+```json
+{
+  "subscription": 14,
+  "request": {
+    "method": "subscribe",
+    "resource": "/path/to/resource"
+  }
+}
+```
