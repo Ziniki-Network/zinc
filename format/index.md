@@ -72,9 +72,68 @@ future versions of it.
 }
 ```
 
-TODO: a put example (request & payload)
-TODO: a create example (request & subscription)
-TODO: cancel subscription
+The resource is often a complete description of the object to
+be watched.  However, there are cases where additional parameters
+are useful.  Unlike HTTP, these are generally not attached to
+the resource string, but contained in a separate block.
+
+```json
+{
+  "subscription": 14,
+  "request": {
+    "method": "subscribe",
+    "resource": "/path/to/resource",
+    "options": {
+      "name": "henry",
+      "age": 42
+    }
+  }
+}
+```
+
+It's also possible to send data to a server.  To write to an existing
+resource, you can use the `put` method:
+
+```json
+{
+  "request": {
+    "method": "put",
+    "resource": "/path/to/resource"
+  },
+  "payload": {
+    // payload as defined in JSONAPI
+  }
+}
+```
+
+Because so much of what goes on with streaming protocols is
+updating small portions of objects, the `update` method is also
+supported.  This does not overwrite an existing resource, but
+only sets those portions which are specified.
+
+```json
+{
+  "request": {
+    "method": "update",
+    "resource": "/path/to/resource"
+  },
+  "payload": {
+    // object deltas formatted as defined in JSONAPI
+  }
+}
+```
+
+If you have created a subscription, it is possible to cancel
+it as follows:
+
+```json
+{
+  "subscription": 14,
+  "request": {
+    "method": "unsubscribe",
+  }
+}
+```
 
 ## Responses
 
@@ -101,21 +160,152 @@ which a response is expected.
 
 ## Sequencing
 
-Request comes before response
-Messages may be arbitrarily interleaved (i.e. your response may not be next)
-Requests can go either way but the ids are separate
+The channel between two processes is open for communication in both directions.
+At any time either end may send a request or a response and the receiving
+end must be ready to handle any valid message.  The "client" may not expect that
+it sends a request and the next message to come back is the single response
+to that message; rather, all requests for which a response is desired must
+contain a subscription ID and then the client must watch for response objects
+coming back with that subscription ID.
 
-## Verbs
+The subscription IDs are maintained for a single requestor on a single channel.
+This being the case, it is entirely possible that requests and responses are
+sent on the same channel in opposite directions with the same subscription ID.
 
-subscribe
-unsubscribe
-get
+Logically, a request must be sent before any response with the request's
+subscription ID.
+If multiple requests are sent with the same subscription ID there is no way
+to determine which request the response was intended for; this is NOT recommended.
 
-put
-update
-create
-delete
+## Methods
 
-invoke
-establish
-teardown
+As with HTTP, ZiNC has a number of "methods" or "verbs" that can be used
+on each request.  These are described below.
+
+### subscribe
+
+Request an object and start subscribing to it.  The request should specify
+a resource to handle the subscription request; in the absence of a resource
+definition, they will be handled by the default request handler.
+
+The request MUST specify a subscription ID.
+
+The request may also specify arbitrary options to control what is to be
+watched.  In many instances, simply specifying the resource is enough
+information; in other cases, this merely tells the server how to consider
+the options.
+
+No payload may be sent.
+
+### unsubscribe
+
+Cancel a previously defined subscription.
+
+The request MUST specify a subscription ID.
+
+No other fields will be recognized.
+
+### get
+
+The `get` operation is a convenience for those cases where it is
+desired to obtain a resource that either will never change (and thus it is
+a waste of resources to track) or for which seeing it change would be
+inconvenient.  In general, this is just not a good idea; you should use
+`subscribe` instead.
+
+The `get` operation is processed as close to `subscribe` followed
+by `unsubscribe` the moment the response is sent as possible.
+
+### put
+
+Store information on the server associated with a resource.  The means
+in which this is carried out is server and resource dependent.
+
+This request requires a resource and a payload and may also include
+options associated with the request.
+
+The resource does not necessarily identify the object to be updated,
+but instead may identify the element in the server responsible for doing the
+updating.  In such cases, there should be a field either in the options
+or in the payload which identifies the object uniquely.
+
+### update
+
+The `update` operation is a variant of the `put` operation.
+
+Unlike the `put` operation which writes the entirety of the payload
+to the data store, the `update` operation considers the payload to
+be a _delta_ and updates the affected objects with the fields that
+are specified in the payload.  Unspecified fields are left unchanged.
+
+### create
+
+Create a new object on the server.
+
+In order for this to work, the server must have a handler
+for the resource which knows how to create objects and the
+specified options and payload must conform to its definition
+of how to create objects.
+
+If a subscription id is specified, the new object will be
+sent as a response to the client.  A subscription will also
+be established for its value.
+
+### delete
+
+Delete an object on the server.
+
+In order for this to work, the server must respect
+deletion semantics, must have a handler for the
+resource which knows how to delete objects and
+the options and payload must combine to specify a
+valid object to delete.
+
+In some cases, the resource may be sufficient
+information by itself to know what object to delete;
+in this case no options or payload are required.
+
+### invoke
+
+Invoke an operation on the server.
+
+The resource is used to identify a handler to carry
+out the operation and the options and payload are
+used to determine the operation and its arguments.
+
+If the operation has a result and a subscription is
+specified, the result is sent to the client.  If the
+operation is of a continuous nature, the subscription
+may receive multiple results.
+
+### establish
+
+An establish method is sent as the first message
+after a connection is established.  One such message
+should be sent in each direction.
+
+There are two required options on the establish
+method: `type` and `address`.  Both indicate information
+about the other end.
+
+The `type` is either `server` or `client` indicating
+mainly whether or not the sending end could be considered
+to be "permanent" or "transitory".
+
+The `address` is a unique, repeatable address for the
+sending end.  For servers, it should be the address on
+which they are listening.  For clients, it may either
+be some unique address which is stored in browser local
+storage or `null` to indicate that the client is
+simply transitory.
+
+### teardown
+
+It is possible for connections to simply "go away".
+
+However, if one end wishes to cease communications and
+end the relationship permanently, it can explicitly
+tear down the connection using the `teardown` method.
+
+No options or payload are needed, and this method does
+not have a subscription ID associated with it.
