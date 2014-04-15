@@ -17,7 +17,7 @@ The ZiNC protocol is a simple, well-defined protocol that builds
 on top of other standard protocols, but leaves the definition of
 operational semantics up to the applications.
 
-Building on top of WebSockets, the ZiNC protocol is compatible
+Building on top of WebSockets, the [ZiNC protocol](/format) is compatible
 with most modern web servers and browsers.
 
 ZiNC uses JSON as its transport because it is easily and natively
@@ -31,7 +31,7 @@ ZiNC builds on top of [JSONAPI](http://jsonapi.org/) to define its object payloa
 
 ## Implementations
 
-Simple APIs to use to communicate using the ZiNC protocol are available for:
+Simple [APIs](/api) to use to communicate using the ZiNC protocol are available for:
 
 * JavaScript
 * Java

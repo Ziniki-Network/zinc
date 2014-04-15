@@ -104,3 +104,18 @@ which a response is expected.
 Request comes before response
 Messages may be arbitrarily interleaved (i.e. your response may not be next)
 Requests can go either way but the ids are separate
+
+## Verbs
+
+subscribe
+unsubscribe
+get
+
+put
+update
+create
+delete
+
+invoke
+establish
+teardown
