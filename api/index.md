@@ -114,16 +114,6 @@ specified resource does not need to exist.  Once processed,
 any responses to this request will be sent to the `ResponseHandler`.
 
 ```
-unsubscribe :: ResponseHandler -> Void
-```
-
-Cancel an existing subscription request (from any source).  In theory,
-no more responses for this request will be delivered to the response
-handler.  In practice, race conditions may mean that one or more messages
-are delivered, although library implementations will generally attempt
-to mitigate this issue.
-
-```
 get :: String(resource) -> ResponseHandler -> MakeRequest
 ```
 
@@ -209,6 +199,16 @@ send :: Void
 
 Send the request to the server.
 
+```
+unsubscribe :: Void
+```
+
+Cancel the subscription request associated with the request.  In theory,
+no more responses for this request will be delivered to the response
+handler.  In practice, race conditions may mean that one or more messages
+are delivered, although library implementations will generally attempt
+to mitigate this issue.
+
 ## ResponseHandler
 
 Objects meeting this contract are created by
@@ -235,7 +235,7 @@ in the main Zinc object it identifies a `ResourceHandler` (if none can
 be identified, the request is rejected).
 
 Objects conforming to `ResourceHandler` are created by the user on the server and
-passed to the Zinc object's handleResouce method.
+passed to the Zinc object's `handleResource` method.
 
 When a `ResourceHandler` has been identified, its handle method is invoked,
 except when the method is unsubscribe, which is handled internally.
